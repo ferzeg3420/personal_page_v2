@@ -56,6 +56,10 @@ body {
     width: 100vw;
     background: #d8514e;
     margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .third-page {
@@ -176,24 +180,24 @@ body {
 
 .project-tile { 
   background: white;
-  height: 45vh; 
   width: 33.33%;
-  border-radius: 2px;
+  border-radius: 0px;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
 .project-image-container {
-  height: 100%;
+  /*height: 100%;*/
   width: 100%;
   border-radius: 2px;
 }
 
 .project-image {
   width: 100%;
-  height: 100%;
-  border-radius: 2px 2px 0 0;
+  height: auto;
+  /*height: 100%;*/
+  border-radius: 0 0 0 0;
 }
 
 .project-tile .project-tile-name {
@@ -210,8 +214,7 @@ body {
   position: absolute;
   align-self: flex-end;
   width: 100%;
-  min-height: 1.2rem;
-  height: 10%;
+  min-height: max(1.2rem, 10%);
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 99;
   color: white;
@@ -296,7 +299,7 @@ body {
 
 .link-to-code:link {
   text-decoration: none;
-  color:white;
+  color: white;
 }
 
 .link-to-code:hover {
@@ -311,6 +314,8 @@ body {
 
 .inline-repo-logo {
   display: block;
+  height: 40%;
+  width: 20%;
 }
 
 .contact-icons {
@@ -328,15 +333,18 @@ a:hover .contact-text {
 @media (max-width: 800px) {
   .project-tile { 
     width: 50%;
-    height: 30vh;
   }
 }
 
 @media (max-width: 550px) {
   .project-tile {
-  height: 50vh;
-  width: 100%;
+    width: 100%;
+    min-height: 200px;
+  }
   h1 {
     font-size: 2.5rem;
+  }
+  .project-tile .project-tile-name {
+    visibility: visible;
   }
 }

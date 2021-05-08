@@ -153,12 +153,14 @@ function transitionBetweenPages(scrollEvent) {
 var keys = {37: 1, 38: 1, 39: 1, 40: 1, 32: 1};
 
 function preventDefaultAndDoCustom(e) {
+    console.log("ping");
     e.preventDefault();
     transitionBetweenPages(e);
 }
 
 function preventDefaultForScrollKeys(e) {
     if( keys[e.keyCode] ) {
+        console.log("ping");
         preventDefaultAndDoCustom(e);
         transitionBetweenPages(e);
         return false;
@@ -178,6 +180,7 @@ var wheelEvent =
     "onwheel" in document.createElement("div") ? "wheel" : "mousewheel";
 
 function disableScroll() {
+    console.log("peng");
     window.addEventListener(
         "DOMMouseScroll",
         preventDefaultAndDoCustom, 
@@ -302,6 +305,25 @@ for( let number of ["first", "second", "third", "fourth", "fifth"]) {
         }, message.length * TYPE_LETTER_DURATION + HALF_A_SECOND);
     });
 }
+
+function handleOpenOnNewTab() {
+    if (document.visibilityState === "visible") {
+        setTimeout( () => {
+            if( window.scrollY > 100 
+                && window.scrollY <= (window.innerHeight + 50) ) {
+                scrollToPage(SECOND_ELMN, SECOND_PAGE);
+                animateSecondPage(); 
+            }
+            else if( window.scrollY > (window.innerHeight + 100) ) {
+                scrollToPage(THIRD_ELMN, THIRD_PAGE);
+                animateSecondPage(); 
+            }
+            document.removeEventListener("visibilitychange", handleOpenOnNewTab);
+        }, 1500);
+    }
+}
+
+document.addEventListener("visibilitychange", handleOpenOnNewTab);
 
 document.addEventListener("DOMContentLoaded",
     () => { 
