@@ -15,6 +15,7 @@ const SCROLL_DOWN = 0;
 
 const TYPE_LETTER_DURATION = 120;
 const HALF_A_SECOND = 500;
+const ONE_SECOND = 1000;
 
 let isScrollDisabled = false;
 
@@ -216,16 +217,21 @@ function enableScroll() {
 
 document.getElementById("second-page-link")
     .addEventListener("click",
-        () => {
-            currentPageViewIsOn = SECOND_PAGE;
-            animateSecondPage(); 
+        (e) => {
+            if( ! (e.metaKey || e.ctrlKey) ) {
+                currentPageViewIsOn = SECOND_PAGE;
+                animateSecondPage(); 
+            }
         });
 
 document.getElementById("third-page-link")
     .addEventListener("click",
-        () => {
-            currentPageViewIsOn = THIRD_PAGE;
-            animateThirdPage(); 
+        (e) => {
+            if( ! (e.metaKey || e.ctrlKey) ) {
+                currentPageViewIsOn = THIRD_PAGE;
+                animateSecondPage(); 
+                animateThirdPage(); 
+            }
         });
 
 const typewriterEffectCursor = 
@@ -319,7 +325,7 @@ function handleOpenOnNewTab() {
                 animateSecondPage(); 
             }
             document.removeEventListener("visibilitychange", handleOpenOnNewTab);
-        }, 1500);
+        }, ONE_SECOND);
     }
 }
 
