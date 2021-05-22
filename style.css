@@ -334,6 +334,56 @@ a:hover .contact-text {
   text-decoration: underline;
 }
 
+
+@keyframes become-left-arrow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(40deg);
+    }
+}
+
+@keyframes become-right-arrow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-40deg);
+    }
+}
+
+.animate-left-arrow {
+   animation-name: become-left-arrow, ease-in;
+   animation-duration: 1s;
+}
+
+.animate-right-arrow {
+   animation-name: become-right-arrow, ease-in;
+   animation-duration: 1s;
+}
+
+.arrow-side {
+   position: absolute;
+   top: 90%;
+   height: 10px;
+   width: 35px;
+   background: gainsboro;
+   border-radius: 10px;
+   z-index: 3;
+}
+
+.arrow-left-part {
+   left: calc(50% - 10px);
+   transform: rotate(40deg);
+}
+
+.arrow-right-part {
+   left: calc(50% + 10px);
+   transform: rotate(-40deg);
+}
+
+
 @media (max-width: 800px) {
   .project-tile { 
     width: 50%;

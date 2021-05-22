@@ -16,8 +16,10 @@ const SCROLL_DOWN = 0;
 const TYPE_LETTER_DURATION = 120;
 const HALF_A_SECOND = 500;
 const ONE_SECOND = 1000;
+const FIVE_SECONDS = 5000;
 
 let isScrollDisabled = false;
+let isTouchScreen = false;
 
 var elementsToAnimateSecondPage =
     document.querySelectorAll(".animate-second-page");
@@ -154,7 +156,7 @@ function transitionBetweenPages(scrollEvent) {
 var keys = {37: 1, 38: 1, 39: 1, 40: 1, 32: 1};
 
 function preventDefaultAndDoCustom(e) {
-    console.log("ping");
+    console.log("ping event:", e);
     e.preventDefault();
     transitionBetweenPages(e);
 }
@@ -191,10 +193,6 @@ function disableScroll() {
         preventDefaultAndDoCustom, 
         wheelOpt); // modern desktop
     window.addEventListener(
-        "touchmove", 
-        preventDefaultAndDoCustom, 
-        wheelOpt); // mobile
-    window.addEventListener(
         "keydown", 
         preventDefaultForScrollKeys, 
         false);
@@ -206,9 +204,6 @@ function enableScroll() {
         false);
     window.removeEventListener(wheelEvent,
         preventDefaultAndDoCustom, 
-        wheelOpt);
-    window.removeEventListener("touchmove", 
-        preventDefaultAndDoCustom,
         wheelOpt);
     window.removeEventListener("keydown", 
         preventDefaultForScrollKeys, 
@@ -284,7 +279,9 @@ window.onresize = () => {
              && (! isScrollDisabled) )
     {
         disableScroll();
-        scrollToPage(FIRST_ELMN, FIRST_PAGE);
+        if(! isTouchScreen ) {
+            scrollToPage(FIRST_ELMN, FIRST_PAGE);
+        }
     }
 };
 
@@ -329,6 +326,20 @@ function handleOpenOnNewTab() {
     }
 }
 
+document.addEventListener("touchstart", () => {
+    isTouchScreen = true;
+    if( isScrollDisabled ) {
+        isScrollDisabled = false;
+        enableScroll();
+    }
+    for( let elmn of elementsToAnimateSecondPage ) {
+        elmn.classList.remove("hidden");
+    }
+    for( let elmn of elementsToAnimateThirdPage ) {
+        elmn.classList.remove("hidden");
+    }
+});
+
 document.addEventListener("visibilitychange", handleOpenOnNewTab);
 
 document.addEventListener("DOMContentLoaded",
@@ -341,4 +352,13 @@ document.addEventListener("DOMContentLoaded",
         hideOneAndShowAnother("first-page-prompt",
             "first-page-info",
             delay);
+
+        setTimeout( () => {
+            let leftArrow = document.getElementById("arrow-left-side");
+            let rightArrow = document.getElementById("arrow-right-side");
+            leftArrow.classList.remove("hidden");
+            rightArrow.classList.remove("hidden");
+            leftArrow.classList.add("animate-left-arrow");
+            rightArrow.classList.add("animate-right-arrow");
+        }, FIVE_SECONDS);
     });
