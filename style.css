@@ -46,8 +46,6 @@ body {
 }
 
 .first-page {
-    padding-top: 10px;
-    padding-left: 10px;
     min-height: 90vh;
     width: 100vw;
     background: #2a2c2d;
@@ -67,16 +65,13 @@ body {
 }
 
 .third-page {
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
     min-height: 90vh;
     width: 100vw;
-    /*background: #2ea8d9;*/
     background: whitesmoke;
     margin: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
 }
@@ -157,18 +152,22 @@ body {
 }
 
 .contact-link:link {
+  cursor: pointer;  
   text-decoration: none !important;
 }
 
 .contact-link:visited {
+  cursor: pointer;  
   text-decoration: none !important;
 }
 
 .contact-link:hover {
+  cursor: pointer;  
   text-decoration: none !important;
 }
 
 .contact-link:active {
+  cursor: pointer;  
   text-decoration: none !important;
 }
 
@@ -228,6 +227,7 @@ body {
 }
 
 .project-tile-text {
+  font-family: monospace;  
   margin-left: 5px;
 }
 
@@ -383,6 +383,20 @@ a:hover .contact-text {
    transform: rotate(-40deg);
 }
 
+.contact-card {
+    font-family: monospace;
+    font-size: 16px;
+    background: lightblue;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 25vh;
+    width: 100vw;
+    position: absolute;
+    z-index: 0;
+    background: whitesmoke;
+}
 
 @media (max-width: 800px) {
   .project-tile { 
@@ -401,4 +415,92 @@ a:hover .contact-text {
   .project-tile .project-tile-name {
     visibility: visible;
   }
+}
+
+/*
+ * MOON BUGGY CODE
+ */
+
+.canvas-lines {
+    margin: 0;
+    height: 13em;
+    width: 100%;
+    font-family: monospace;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.character-sizing {
+    position: absolute;
+    top: -100px;
+    padding: 0px;
+    font-family: monospace;
+}
+
+.asciiRow {
+    display: block;
+}
+
+.sky-container {
+    margin: 0;
+    background: whitesmoke;
+    padding: 0;
+    height: 12em;
+    width: 100%;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.ascii-container {
+    margin: 0;
+    background: whitesmoke;
+    padding: 0;
+    height: 13em;
+    width: 100%;
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+/*
+ * END MOON BUGGY CODE
+ */
+
+.contact-tooltip {
+    border-radius: 0px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    position: absolute;
+    left: -1000px;
+    height: 3em;
+    background: whitesmoke;
+    color: black;
+}
+
+.hidden-tooltip {
+    visibility: hidden;
+}
+
+/*
+ * ascii box tooltip
+ */
+
+.ascii-box-line {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+}
+
+.close-button {
+    cursor: pointer;
 }
