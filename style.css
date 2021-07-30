@@ -217,7 +217,7 @@ body {
   position: absolute;
   align-self: flex-end;
   width: 100%;
-  min-height: max(1.2rem, 10%);
+  min-height: max(1.5rem, 15%);
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 99;
   color: white;
@@ -228,6 +228,7 @@ body {
 
 .project-tile-text {
   font-family: monospace;  
+  font-size: 16px;
   margin-left: 5px;
 }
 
@@ -285,7 +286,7 @@ body {
 }
 
 .links-to-more-code {
-  background: #2a2c2d;
+  background: #3a3b3c;
   display: flex;
   flex-direction: column; 
   justify-content: center;
@@ -318,8 +319,8 @@ body {
 
 .inline-repo-logo {
   display: block;
-  height: 40%;
-  width: 20%;
+  height: 50%;
+  width: 30%;
 }
 
 .contact-icons {

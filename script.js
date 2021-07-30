@@ -376,6 +376,7 @@ document.addEventListener("DOMContentLoaded",
     });
 
 // --- MOON-BUGGY code
+const frameRateInMiliseconds = 110;
 const canvasHeight = 10;
 const canvasContainer = document.getElementById("ascii-canvas-container");
 const forSizingChars = document.getElementById("char-sizing");
@@ -425,7 +426,6 @@ const courseWidth = 400;
 const END_OF_JUMPING_ANIMATION = 11;
 const HORIZONTAL_LINE = 2;
 
-let isScrolling = true;
 let scrollIntervalId = null;
 let numberForWheelState = 0;
 let isCarOnGround = true;
@@ -715,47 +715,34 @@ function scroll() {
         holeIndexIter = (holeIndexIter + 1) % holes.length;
         next = holes[holeIndexIter];
     }
+    const penultimateRow = canvasHeight - 2;
+    const cellInFrontOfCar = numberOfChars - 11;
 
     for( let i = 0; i < numberOfChars; i++) {
-        let tempIsCrater = (asciiCanvas[canvasHeight - 2][i] !== "#");
+        let tempIsCrater = (asciiCanvas[penultimateRow][i] !== "#");
         if( isCrater ) {
-            // canvasHeight - 2 is the penultimate row for holes/road
-            asciiCanvas[canvasHeight - 2][i] = "&nbsp;";
+            asciiCanvas[penultimateRow][i] = "&nbsp;";
         }
         else {
-            // canvasHeight - 2 is the penultimate row for holes/road
-            asciiCanvas[canvasHeight - 2][i] = "#";
+            asciiCanvas[penultimateRow][i] = "#";
         }
         isCrater = tempIsCrater;
     }
     indexForScroll = (indexForScroll + 1) % courseWidth; 
 
     // jump if next to crater
-    // canvasHeight - 2 is the penultimate row for holes/road
-    // numberOfChars - 11 is the cell in front of the car 
-    if( asciiCanvas[canvasHeight - 2][numberOfChars - 11] !== "#" ) {
+    if( asciiCanvas[penultimateRow][cellInFrontOfCar] !== "#" ) {
         isCarOnGround = false;
     }
 
     drawCanvas(true);
 }
 
-// Uncomment these lines to be able to make the car jump using space
-//
-//document.addEventListener('keydown', (event) => {
-//    const keyName = event.code;
-//
-//    if (keyName === 'Space') {
-//        isCarOnGround = false;
-//        return;
-//    }
-//}, false);
-
 initCanvasMatrix(false);
 drawFloor();
 drawCar();
 drawCanvas(true);
-scrollIntervalId = setInterval(scroll, 110); 
+scrollIntervalId = setInterval(scroll, frameRateInMiliseconds); 
 // --- END of MOON-BUGGY code
 
 // --- START cloud animation code
@@ -765,6 +752,8 @@ const sunOffset = 8;
 const cloudNames = ["cloud1", "cloud2", "cloud3", "cloud4"];
 const cloudNameIndex = 0;
 const cloudOffsetIndex = 1;
+const windowResizeTime = 500;
+const cloudDrawingFrameRate = 440;
 
 let cloudIsScrolling = true;
 let cloudScrollIntervalId = null;
@@ -955,11 +944,12 @@ function drawSkyThings( drawingSelection, horizontalOffset ) {
     }
 }
 
-
 function cloudScroll() {
-    if( Math.floor(Math.random() * 100) % 50 == 0 ) {
+    // Draw a cloud randomly every 50 cells, on average.
+    if( Math.floor(Math.random() * 50) == 0 ) {
+        
         let cloudNameTempIndex =
-            Math.floor(Math.random() * 10) % cloudNames.length;
+            Math.round(Math.random() * (cloudNames.length - 1));
         cloudsBeingDrawn.push( [ cloudNames[cloudNameTempIndex], -25 ] );
     }
     drawSkyThings("sun", numberOfChars - cloudWidth + sunOffset);
@@ -978,70 +968,9 @@ function cloudScroll() {
     drawClouds(true);
 }
 
-window.onresize = function() {
-    if( cloudIsScrolling ) {
-        // ascii sky drawing
-        clearInterval(cloudScrollIntervalId);
-        let cloudToRemove = document.getElementById("cloud-ascii-canvas");
-        cloudToRemove.remove();
-        cloudIsScrolling = false;
-        let cloudAsciiCanvasString = 
-            `<div class="canvas-lines" id="cloud-ascii-canvas">
-                 <span class="asciiRow">
-                 </span>
-            </div>`;
-        cloudCanvasContainer.insertAdjacentHTML('beforeend',
-                                                cloudAsciiCanvasString);
-        // moon-buggy drawing
-        clearInterval(scrollIntervalId);
-        let toRemove = document.getElementById("ascii-canvas");
-        toRemove.remove();
-        isScrolling = false;
-        let asciiCanvasString = 
-            `<div class="canvas-lines" id="ascii-canvas">
-                 <span class="asciiRow">
-                  Animation of Jochen Voss' Moon Buggy by Fernando Zegada
-                 </span>
-            </div>`;
-        canvasContainer.insertAdjacentHTML('beforeend', asciiCanvasString);
-    }
-    if( this.resizeTimeout ) {
-        clearTimeout(this.resizeTimeout);
-    }
-    this.resizeTimeout = setTimeout(function() {
-        // ascii sky drawing
-        cloudIsScrolling = true;
-        windowWidth = window.innerWidth;
-        numberOfChars = Math.floor(windowWidth / charWidth);
-
-        cloudAsciiCanvas = [];
-        initCloudsMatrix(true);
-        drawClouds(true);
-        cloudScrollIntervalId = setInterval(cloudScroll, 440); 
-
-        // earth-buggy drawing
-        isScrolling = true;
-        numberForWheelState = 0;
-        isCarOnGround = true;
-        jumpState = 0;
-        holeIndexIter = 0;
-        next = holes[holeIndexIter];
-        windowWidth = window.innerWidth;
-        numberOfChars = Math.floor(windowWidth / charWidth);
-        indexForScroll = (numberOfChars + 1) % courseWidth;
-
-        asciiCanvas = [];
-        initCanvasMatrix(true);
-        drawFloor();
-        drawCar();
-        drawCanvas(true);
-        scrollIntervalId = setInterval(scroll, 110); 
-    }, 500);
-};
-
 initCloudsMatrix(false);
 drawClouds(true);
-cloudScrollIntervalId = setInterval(cloudScroll, 440); 
+cloudScrollIntervalId = setInterval(cloudScroll, cloudDrawingFrameRate); 
 
 // --- END cloud animation code
 // --- Tooltip
@@ -1055,30 +984,75 @@ let phoneTooltip = document.getElementById("phone-tooltip");
 let emailLink = document.getElementById("email-link");
 let phoneLink = document.getElementById("phone-link");
 
+function getTooltipVerticalPosition(
+    tooltipId,
+    clickedElementRect 
+) {
+    const emailTooltipOffset = tooltipVerticalOffset + 15;
+    const phoneTooltipOffset = tooltipVerticalOffset - 20;
+    const screenTooSmallUseAlt = 780;
+
+    if( window.innerWidth < screenTooSmallUseAlt ) { 
+        if( tooltipId == "email-tooltip" ) {
+            return clickedElementRect.top 
+                + emailTooltipOffset
+                + window.scrollY;
+        }
+        return clickedElementRect.top 
+            + phoneTooltipOffset
+            + window.scrollY;
+    }
+    return clickedElementRect.top + tooltipVerticalOffset + window.scrollY;
+}
+
+function getTooltipHorizontalPosition(
+    tooltipId, 
+    clickedElementRect, 
+    tooltipRect
+) {
+    const screenTooSmallUseAlt = 780;
+    if( window.innerWidth < screenTooSmallUseAlt ) { 
+        console.log("screen too small");
+        let tooltipHalfWidth = tooltipRect.width / 2;
+        let clickedElementCenter =
+            clickedElementRect.left + (clickedElementRect.width / 2);
+        return (clickedElementCenter - tooltipHalfWidth) + "px";
+    }
+    if( tooltipId == "email-tooltip" ) {
+        return (clickedElementRect.right + tooltipHorizontalOffset) + "px";
+    }
+    return (clickedElementRect.left - tooltipRect.width) + "px";
+}
+
 function toggleTooltip(e, tooltipElement, clickedElement, isTooltipVisible) {
     let tooltipRect = tooltipElement.getBoundingClientRect();
     let clickedElementRect = clickedElement.getBoundingClientRect();
     if( isTooltipVisible ) {
-        tooltipElement.style.left = "-1000px";
+        tooltipElement.style.left = "-1000px"; // hide the element offscreen
     }
     else {
-        let newPosition = "";
-        if(tooltipElement.id == "email-tooltip" ) {
-            newPosition = 
-                (clickedElementRect.right + tooltipHorizontalOffset) + "px";
-        }
-        else {
-            newPosition = 
-                (clickedElementRect.left - tooltipRect.width) + "px";
-        }
-        tooltipElement.style.left = newPosition;
+        let newHorizontalPosition = 
+            getTooltipHorizontalPosition(
+                tooltipElement.id,
+                clickedElementRect,
+                tooltipRect
+            );
+        tooltipElement.style.left = newHorizontalPosition;
+        let newTopPos = 
+            getTooltipVerticalPosition(tooltipElement.id, clickedElementRect);
 
-        let newTopPos =
-            clickedElementRect.top + tooltipVerticalOffset + window.scrollY;
+        //let newTopPos =
+        //    clickedElementRect.top + tooltipVerticalOffset + window.scrollY;
         tooltipElement.style.top = newTopPos + "px";
     }
     tooltipElement.classList.toggle("hidden-tooltip");
-    isTooltipVisible = !isTooltipVisible;
+    //isTooltipVisible = !isTooltipVisible;
+    if(tooltipElement.id == "email-tooltip" ) {
+        isEmailTooltipVisible = !isEmailTooltipVisible;
+    }
+    else {
+        isPhoneTooltipVisible = !isPhoneTooltipVisible;
+    }
 }
 
 emailLink.onclick = (e) => {
@@ -1100,3 +1074,74 @@ closePhoneTooltip.onclick = (e) => {
 };
 
 // --- END tooltip
+
+window.onresize = function() {
+    if( isEmailTooltipVisible ) {
+        toggleTooltip(null, emailTooltip, emailLink, isEmailTooltipVisible);
+    }
+    if( isPhoneTooltipVisible ) {
+        toggleTooltip(null, phoneTooltip, phoneLink, isPhoneTooltipVisible);
+    }
+    if( cloudIsScrolling ) {
+        // ascii sky drawing
+        clearInterval(cloudScrollIntervalId);
+        let cloudToRemove = document.getElementById("cloud-ascii-canvas");
+        cloudToRemove.remove();
+        cloudIsScrolling = false;
+        let cloudAsciiCanvasString = 
+            `<div class="canvas-lines" id="cloud-ascii-canvas">
+                 <span class="asciiRow">
+                 </span>
+            </div>`;
+
+        cloudCanvasContainer.insertAdjacentHTML(
+            "beforeend",
+            cloudAsciiCanvasString
+        );
+
+        // moon-buggy resizing message
+        clearInterval(scrollIntervalId);
+        let toRemove = document.getElementById("ascii-canvas");
+        toRemove.remove();
+        let asciiCanvasString = 
+            `<div class="canvas-lines" id="ascii-canvas">
+                 <span class="asciiRow">
+                  Animation of Jochen Voss' Moon Buggy by Fernando Zegada
+                 </span>
+            </div>`;
+        canvasContainer.insertAdjacentHTML("beforeend", asciiCanvasString);
+    }
+    if( this.resizeTimeout ) {
+        clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = setTimeout(function() {
+        // ascii sky drawing
+        cloudIsScrolling = true;
+        windowWidth = window.innerWidth;
+        numberOfChars = Math.floor(windowWidth / charWidth);
+
+        cloudAsciiCanvas = [];
+        initCloudsMatrix(true);
+        drawClouds(true);
+        cloudScrollIntervalId = 
+            setInterval(cloudScroll, cloudDrawingFrameRate); 
+
+        // earth-buggy drawing
+        numberForWheelState = 0;
+        isCarOnGround = true;
+        jumpState = 0;
+        holeIndexIter = 0;
+        next = holes[holeIndexIter];
+        windowWidth = window.innerWidth;
+        numberOfChars = Math.floor(windowWidth / charWidth);
+        indexForScroll = (numberOfChars + 1) % courseWidth;
+
+        asciiCanvas = [];
+        initCanvasMatrix(true);
+        drawFloor();
+        drawCar();
+        drawCanvas(true);
+        scrollIntervalId = setInterval(scroll, frameRateInMiliseconds); 
+
+    }, windowResizeTime);
+};
