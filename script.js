@@ -31,12 +31,10 @@ function animateSecondPage() {
     }
 }
 
-let lastKnownScrollPosition = 0;
 let ticking = false;
 const projectsAreFullyVisible = window.innerHeight * 0.9;
 
-function showProjectsIfInView(scrollPos) {
-    console.log(scrollPos);
+function showProjectsIfInView() {
     let projectPos = firstProjectElement.getBoundingClientRect().top;
     if( projectPos < projectsAreFullyVisible ) {
         animateSecondPage();
@@ -44,11 +42,9 @@ function showProjectsIfInView(scrollPos) {
 }
 
 document.addEventListener("scroll", function(e) {
-    lastKnownScrollPosition = window.scrollY;
-
     if (!ticking) {
         window.requestAnimationFrame(function() {
-            showProjectsIfInView(lastKnownScrollPosition);
+            showProjectsIfInView();
             ticking = false;
         });
         ticking = true;
@@ -200,7 +196,7 @@ function drawCanvas(isRemovePrevious) {
         toRemove.remove();
     }
 
-    let asciiCanvasString = "<div class=;canvas-lines; id=;ascii-canvas;>";
+    let asciiCanvasString = "<div class='canvas-lines' id='ascii-canvas'>";
     for( let j = 0; j < canvasHeight; j++) {
         let row = `<span class="asciiRow">${asciiCanvas[j].join("")}</span>`;
         asciiCanvasString = asciiCanvasString + row;
